@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Blog</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* Ensure body/html take full height */
+  html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+  }
+
+  /* Blog container full width and spacing */
+  #blog-container {
+      width: 100%;
+      box-sizing: border-box;
+      padding-bottom: 50px; /* prevent last blog from being cut off */
+  }
+
+  /* Optional: make the page background black like overlay */
+  body {
+      background-color: black;
+      color: white;
+  }
+
+  /* Blog headings inside container */
+  #blog-container h1, #blog-container h2 {
+      color: gold;
+      text-align: center;
+      margin: 20px 0;
+  }
+
+  #blog-container hr {
+      width: 60%;
+      border: 1px solid gold;
+      margin: 0 auto 20px auto;
+  }
+</style>
+</head>
+<body>
+
+<h1>My Blog</h1>
+<hr>
+<div id="blog-container"></div>
+
+<script>
+const container = document.getElementById('blog-container');
+const folder = 'all_blogs';
+const delay = 500; // delay between loading blogs
+let currentBlogNumber;
+let loadedBlogs = new Set();
+
+// Read latest blog number
+async function getStartingBlogNumber() {
+    try {
+        const response = await fetch('blogcount.txt', { cache: 'no-cache' });
+        if (!response.ok) throw new Error("Couldn't fetch blogcount.txt");
+        const text = await response.text();
+        const count = parseInt(text.trim(), 10);
+        if (isNaN(count) || count < 1) throw new Error("Invalid blog count in blogcount.txt");
+        return count;
+    } catch (error) {
+        console.error('Error fetching blog count:', error);
+        throw error;
+    }
+}
+
+// Load single blog
+async function loadSingleBlog(blogNumber) {
+    if (loadedBlogs.has(blogNumber)) return false;
+
+    try {
+        const response = await fetch(`${folder}/blog${blogNumber}.html`, { cache: 'no-cache' });
+        if (!response.ok) {
+            loadedBlogs.add(blogNumber);
+            return false;
+        }
+
+        const html = await response.text();
+        if (loadedBlogs.has(blogNumber)) return false;
+
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        div.setAttribute('data-blog-id', blogNumber);
+        container.appendChild(div);
+        loadedBlogs.add(blogNumber);
+
+        adjustHeight();
+        return true;
+    } catch (error) {
+        console.error(`Error loading blog ${blogNumber}:`, error);
+        loadedBlogs.add(blogNumber);
+        return false;
+    }
+}
+
+// Load next blog in descending order
+async function loadNextBlog() {
+    if (currentBlogNumber < 1) return;
+
+    await loadSingleBlog(currentBlogNumber);
+    currentBlogNumber--;
+
+    if (currentBlogNumber >= 1) {
+        setTimeout(loadNextBlog, delay);
+    } else {
+        console.log('All blogs loaded');
+    }
+}
+
+// Adjust iframe height in parent if used
+function adjustHeight() {
+    const iframe = parent?.document?.getElementById('content');
+    if (iframe) iframe.style.height = (document.body.scrollHeight + 50) + 'px';
+}
+
+// Initialize blog loading
+async function initializeBlog() {
+    try {
+        const count = await getStartingBlogNumber();
+        currentBlogNumber = count;
+        await loadNextBlog();
+    } catch (error) {
+        container.innerHTML = `<div style="color:red;">Error: ${error.message}</div>`;
+    }
+}
+
+// Start when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeBlog);
+} else {
+    initializeBlog();
+}
+
+// Adjust height on summary toggle clicks
+document.addEventListener('click', e => {
+    if (e.target.tagName === 'SUMMARY') {
+        setTimeout(adjustHeight, 100);
+    }
+});
+</script>
+
+</body>
+</html>

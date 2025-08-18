@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WELCOME</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="enter.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Floating Text Background -->
+<div class="floating-text"></div>
+
+<!-- Overlay -->
+<div id="overlay">
+  <h1>ME OR AI?</h1>
+
+  <p>Did I use AI to make this site?</p>
+  <p>Of course! I mean… it’s 2025, why wouldn’t I? :P</p>
+
+  <p>Here’s the fun part…</p>
+  <p>50% of this site is me + AI</p>
+  <p>30% is pure me</p>
+  <p>20% is straight-up AI magic</p>
+
+  <p>And this very interface you’re looking at? 99% AI doing the heavy lifting.</p>
+
+  <p>So… now it’s up to you. :-)</p>
+
+  <button onclick="enterSite()">Enter</button>
+</div>
+
+<!-- Home button -->
+
+<!-- Iframe -->
+<iframe id="content" style="width:100%; height:100vh; border:none;"></iframe>
+
+<!-- Footer -->
+<footer>&copy; 2025 SHAIKH TANIM MAHFUZ. Made With ♥️</footer>
+
+<!-- JS -->
+<script>
+  // Floating texts already handled in enter.css or your existing JS
+
+  function enterSite() {
+    document.getElementById('overlay').classList.add('hidden');
+    document.getElementById('content').src = 'home.html';
+  }
+</script>
+<script src="myjavas.js"></script>
+
+</body>
+</html>
