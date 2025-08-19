@@ -1,0 +1,7 @@
+# staticman.yml
+production:
+  branch: main                     # your GitHub Pages branch (often 'main' or 'master')
+  repository: skmahfuz2007-afk/tanimmahfuz  # replace with your GitHub username and repo name
+  allowedFields: [name, message]  # fields visitors will fill in
+  moderation: false                 # true = you approve comments before they appear
+  format: yaml                     # how comments are saved (YAML files)
